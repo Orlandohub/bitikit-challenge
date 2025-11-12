@@ -1,103 +1,190 @@
-import Image from "next/image";
+"use client";
+
+import { useCallback, useEffect, useRef } from "react";
+
+import { NotificationBanner } from "@/components/notification-banner";
+import { Pagination } from "@/components/pagination";
+import { UserGrid } from "@/components/user-grid";
+import { fetchUsers } from "@/lib/api";
+import {
+  getFavoritesMap,
+  getUsersByPage,
+  isPageFresh,
+  saveUsers,
+  toggleFavorite,
+} from "@/lib/db-operations";
+import { Env } from "@/lib/env";
+import { useUserStore } from "@/lib/store";
+
+const RESULTS_PER_PAGE = Env.NEXT_PUBLIC_DEFAULT_RESULTS_PER_PAGE;
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+  const {
+    users,
+    pagination,
+    status,
+    setUsers,
+    setLoading,
+    setOffline,
+    setError,
+    clearError,
+    setCurrentPage,
+    setTotalPages,
+    toggleFavoriteLocal,
+  } = useUserStore();
+
+  const hasUsers = users.length > 0;
+  const bannerVariant = status.error
+    ? "error"
+    : status.isOffline
+    ? "offline"
+    : null;
+  const bannerMessage =
+    status.error ??
+    (status.isOffline ? "You are offline. Showing cached users." : null);
+
+  const handleAbortOngoingRequest = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+  }, []);
+
+  const loadUsers = useCallback(
+    async (
+      page: number,
+      { useCacheOnly = false }: { useCacheOnly?: boolean } = {}
+    ) => {
+      setLoading(true);
+      clearError();
+
+      try {
+        const cachedUsers = await getUsersByPage(page, RESULTS_PER_PAGE);
+
+        if (cachedUsers.length > 0) {
+          setUsers(cachedUsers);
+        }
+
+        if (useCacheOnly) {
+          setOffline(true);
+          return;
+        }
+
+        if (cachedUsers.length > 0 && (await isPageFresh(page))) {
+          setOffline(false);
+          return;
+        }
+
+        handleAbortOngoingRequest();
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+
+        const favorites = await getFavoritesMap();
+        const fetchedUsers = await fetchUsers({
+          page,
+          results: RESULTS_PER_PAGE,
+          favoritesMap: favorites,
+          signal: controller.signal,
+        });
+
+        await saveUsers(fetchedUsers);
+        setUsers(fetchedUsers);
+        setOffline(false);
+      } catch (error) {
+        console.error("Failed to load users:", error);
+
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+
+        const cachedUsers = await getUsersByPage(page, RESULTS_PER_PAGE);
+
+        if (cachedUsers.length > 0) {
+          setUsers(cachedUsers);
+          setOffline(true);
+        } else {
+          setError("Unable to fetch users. Please try again later.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    },
+    [
+      clearError,
+      setError,
+      setLoading,
+      setOffline,
+      setUsers,
+      handleAbortOngoingRequest,
+    ]
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+    setTotalPages(Env.NEXT_PUBLIC_DEFAULT_TOTAL_PAGES);
+
+    loadUsers(1, { useCacheOnly: false }).catch((error) =>
+      console.error("Error on initial load:", error)
+    );
+
+    return () => {
+      handleAbortOngoingRequest();
+    };
+  }, [loadUsers, setCurrentPage, setTotalPages]);
+
+  const handlePageChange = async (page: number) => {
+    setCurrentPage(page);
+    await loadUsers(page, { useCacheOnly: false });
+  };
+
+  const handleRetry = async () => {
+    await loadUsers(pagination.currentPage, { useCacheOnly: false });
+  };
+
+  const handleToggleFavorite = async (userId: string, nextValue: boolean) => {
+    toggleFavoriteLocal(userId, nextValue);
+    await toggleFavorite(userId, nextValue);
+  };
+
+  return (
+    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
+      <header className="space-y-2">
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+          Random Users
+        </h1>
+        <p className="text-muted-foreground">
+          Browse users fetched from randomuser.me with offline support and local
+          favorites.
+        </p>
+      </header>
+
+      {bannerVariant && bannerMessage ? (
+        <NotificationBanner
+          variant={bannerVariant}
+          message={bannerMessage}
+          onRetry={status.error ? handleRetry : undefined}
+          onDismiss={status.error ? clearError : undefined}
+        />
+      ) : null}
+
+      <section aria-busy={status.isLoading}>
+        <UserGrid
+          users={users}
+          isLoading={status.isLoading && !hasUsers}
+          onToggleFavorite={handleToggleFavorite}
+        />
+      </section>
+
+      <footer className="mt-auto flex items-center justify-center border-t border-border pt-6">
+        <Pagination
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          onPageChange={handlePageChange}
+          isLoading={status.isLoading}
+        />
       </footer>
-    </div>
+    </main>
   );
 }
