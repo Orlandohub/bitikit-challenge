@@ -1,11 +1,13 @@
 import { create } from "zustand";
 
+import { Env } from "@/lib/env";
 import type { PaginationState, StatusState, User } from "./types";
 
 type FavoritesMap = Record<string, boolean>;
 
-export const DEFAULT_RESULTS_PER_PAGE = 10;
-export const DEFAULT_TOTAL_PAGES = 10;
+export const DEFAULT_RESULTS_PER_PAGE =
+  Env.NEXT_PUBLIC_DEFAULT_RESULTS_PER_PAGE;
+export const DEFAULT_TOTAL_PAGES = Env.NEXT_PUBLIC_DEFAULT_TOTAL_PAGES;
 
 interface UserStore {
   users: User[];

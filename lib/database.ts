@@ -1,5 +1,7 @@
 import Dexie, { Table } from "dexie";
 
+import { Env } from "@/lib/env";
+
 export interface UserRecord {
   id: string;
   title: string;
@@ -25,9 +27,9 @@ export class AppDatabase extends Dexie {
   users!: Table<UserRecord, string>;
 
   constructor() {
-    super("bitikit-users");
+    super(Env.NEXT_PUBLIC_DB_NAME);
 
-    this.version(1).stores({
+    this.version(Env.NEXT_PUBLIC_DB_VERSION).stores({
       users: "&id, page, isFavorite, lastName, fetchedAt, [page+order]",
     });
   }
