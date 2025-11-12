@@ -14,6 +14,7 @@ interface UserStore {
   favorites: FavoritesMap;
   pagination: PaginationState;
   status: StatusState;
+  isManualOffline: boolean;
   setUsers: (users: User[]) => void;
   setFavoritesMap: (favorites: FavoritesMap) => void;
   toggleFavoriteLocal: (userId: string, value?: boolean) => boolean;
@@ -25,6 +26,7 @@ interface UserStore {
   setError: (message: string | null) => void;
   clearError: () => void;
   setInitialLoadComplete: () => void;
+  setManualOffline: (value: boolean) => void;
 }
 
 export const useUserStore = create<UserStore>((set, get) => ({
@@ -41,6 +43,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
     isOffline: false,
     error: null,
   },
+  isManualOffline: false,
   setUsers: (users) =>
     set((state) => ({
       users,
@@ -115,7 +118,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
     set((state) => ({
       status: {
         ...state.status,
-        isOffline: value,
+        isOffline: state.isManualOffline ? true : value,
       },
     })),
   setError: (message) =>
@@ -137,6 +140,14 @@ export const useUserStore = create<UserStore>((set, get) => ({
       status: {
         ...state.status,
         isInitialLoad: false,
+      },
+    })),
+  setManualOffline: (value) =>
+    set((state) => ({
+      isManualOffline: value,
+      status: {
+        ...state.status,
+        isOffline: value ? true : state.status.isOffline,
       },
     })),
 }));

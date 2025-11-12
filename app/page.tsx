@@ -1,11 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import { Wifi, WifiOff } from "lucide-react";
 
 import { NotificationBanner } from "@/components/notification-banner";
 import { Pagination } from "@/components/pagination";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UserGrid } from "@/components/user-grid";
+import { Button } from "@/components/ui/button";
 import { fetchUsers } from "@/lib/api";
 import {
   getFavoritesMap,
@@ -34,6 +36,8 @@ export default function Home() {
     setCurrentPage,
     setTotalPages,
     toggleFavoriteLocal,
+    isManualOffline,
+    setManualOffline,
   } = useUserStore();
 
   const hasUsers = users.length > 0;
@@ -126,28 +130,38 @@ export default function Home() {
     setCurrentPage(1);
     setTotalPages(Env.NEXT_PUBLIC_DEFAULT_TOTAL_PAGES);
 
-    loadUsers(1, { useCacheOnly: false }).catch((error) =>
+    loadUsers(1, { useCacheOnly: isManualOffline }).catch((error) =>
       console.error("Error on initial load:", error)
     );
 
     return () => {
       handleAbortOngoingRequest();
     };
-  }, [loadUsers, setCurrentPage, setTotalPages]);
+  }, [loadUsers, setCurrentPage, setTotalPages, handleAbortOngoingRequest, isManualOffline]);
 
   const handlePageChange = async (page: number) => {
     setCurrentPage(page);
-    await loadUsers(page, { useCacheOnly: false });
+    await loadUsers(page, { useCacheOnly: isManualOffline });
   };
 
   const handleRetry = async () => {
-    await loadUsers(pagination.currentPage, { useCacheOnly: false });
+    await loadUsers(pagination.currentPage, { useCacheOnly: isManualOffline });
   };
 
   const handleToggleFavorite = async (userId: string, nextValue: boolean) => {
     toggleFavoriteLocal(userId, nextValue);
     await toggleFavorite(userId, nextValue);
   };
+
+  const handleOfflineToggle = useCallback(async () => {
+    const nextValue = !isManualOffline;
+    setManualOffline(nextValue);
+    if (nextValue) {
+      await loadUsers(pagination.currentPage, { useCacheOnly: true });
+    } else {
+      await loadUsers(pagination.currentPage, { useCacheOnly: false });
+    }
+  }, [isManualOffline, setManualOffline, loadUsers, pagination.currentPage]);
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
@@ -161,7 +175,27 @@ export default function Home() {
             local favorites.
           </p>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant={isManualOffline ? "default" : "outline"}
+            onClick={handleOfflineToggle}
+            aria-pressed={isManualOffline}
+          >
+            {isManualOffline ? (
+              <>
+                <WifiOff className="mr-2 h-4 w-4" aria-hidden="true" />
+                Offline mode
+              </>
+            ) : (
+              <>
+                <Wifi className="mr-2 h-4 w-4" aria-hidden="true" />
+                Go offline
+              </>
+            )}
+          </Button>
+          <ThemeToggle />
+        </div>
       </header>
 
       {bannerVariant && bannerMessage ? (
