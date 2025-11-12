@@ -1,0 +1,265 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`UserCard - Snapshots > matches snapshot for default state 1`] = `
+<div
+  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative overflow-hidden"
+  data-slot="card"
+>
+  <div
+    class="@container/card-header auto-rows-min grid-rows-[auto_auto] px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-start justify-between gap-4"
+    data-slot="card-header"
+  >
+    <div
+      class="flex items-center gap-3"
+    >
+      <span
+        class="relative flex size-8 shrink-0 overflow-hidden rounded-full h-12 w-12"
+        data-slot="avatar"
+      >
+        <span
+          class="bg-muted flex size-full items-center justify-center rounded-full"
+          data-slot="avatar-fallback"
+        >
+          AL
+        </span>
+      </span>
+      <div>
+        <div
+          class="font-semibold text-lg"
+          data-slot="card-title"
+        >
+          Ada
+           
+          Lovelace
+        </div>
+        <p
+          class="text-sm text-muted-foreground"
+        >
+          ada@example.com
+        </p>
+      </div>
+    </div>
+    <button
+      aria-label="Add to favorites"
+      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9 transition-colors"
+      data-slot="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-heart h-4 w-4"
+        fill="transparent"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"
+        />
+      </svg>
+    </button>
+  </div>
+  <div
+    class="px-6 flex flex-col gap-4"
+    data-slot="card-content"
+  >
+    <div
+      class="flex flex-wrap items-center gap-2"
+    >
+      <span
+        class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90"
+        data-slot="badge"
+      >
+        Engineer
+      </span>
+      <span
+        class="text-sm text-muted-foreground"
+      >
+        London, Greater London, UK
+      </span>
+    </div>
+    <div
+      class="grid gap-2 text-sm"
+    >
+      <div
+        class="flex flex-col"
+      >
+        <span
+          class="text-xs uppercase tracking-wide text-muted-foreground"
+        >
+          Phone
+        </span>
+        <span
+          class="font-medium text-foreground"
+        >
+          123-456-7890
+        </span>
+      </div>
+      <div
+        class="flex flex-col"
+      >
+        <span
+          class="text-xs uppercase tracking-wide text-muted-foreground"
+        >
+          Cell
+        </span>
+        <span
+          class="font-medium text-foreground"
+        >
+          987-654-3210
+        </span>
+      </div>
+      <div
+        class="flex flex-col"
+      >
+        <span
+          class="text-xs uppercase tracking-wide text-muted-foreground"
+        >
+          Address
+        </span>
+        <span
+          class="font-medium text-foreground"
+        >
+          42 Binary St
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`UserCard - Snapshots > matches snapshot when user is favorite 1`] = `
+<div
+  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative overflow-hidden"
+  data-slot="card"
+>
+  <div
+    class="@container/card-header auto-rows-min grid-rows-[auto_auto] px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-start justify-between gap-4"
+    data-slot="card-header"
+  >
+    <div
+      class="flex items-center gap-3"
+    >
+      <span
+        class="relative flex size-8 shrink-0 overflow-hidden rounded-full h-12 w-12"
+        data-slot="avatar"
+      >
+        <span
+          class="bg-muted flex size-full items-center justify-center rounded-full"
+          data-slot="avatar-fallback"
+        >
+          AL
+        </span>
+      </span>
+      <div>
+        <div
+          class="font-semibold text-lg"
+          data-slot="card-title"
+        >
+          Ada
+           
+          Lovelace
+        </div>
+        <p
+          class="text-sm text-muted-foreground"
+        >
+          ada@example.com
+        </p>
+      </div>
+    </div>
+    <button
+      aria-label="Remove from favorites"
+      class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-9 transition-colors bg-rose-500 hover:bg-rose-500 text-white"
+      data-slot="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-heart h-4 w-4"
+        fill="currentColor"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"
+        />
+      </svg>
+    </button>
+  </div>
+  <div
+    class="px-6 flex flex-col gap-4"
+    data-slot="card-content"
+  >
+    <div
+      class="flex flex-wrap items-center gap-2"
+    >
+      <span
+        class="inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90"
+        data-slot="badge"
+      >
+        Engineer
+      </span>
+      <span
+        class="text-sm text-muted-foreground"
+      >
+        London, Greater London, UK
+      </span>
+    </div>
+    <div
+      class="grid gap-2 text-sm"
+    >
+      <div
+        class="flex flex-col"
+      >
+        <span
+          class="text-xs uppercase tracking-wide text-muted-foreground"
+        >
+          Phone
+        </span>
+        <span
+          class="font-medium text-foreground"
+        >
+          123-456-7890
+        </span>
+      </div>
+      <div
+        class="flex flex-col"
+      >
+        <span
+          class="text-xs uppercase tracking-wide text-muted-foreground"
+        >
+          Cell
+        </span>
+        <span
+          class="font-medium text-foreground"
+        >
+          987-654-3210
+        </span>
+      </div>
+      <div
+        class="flex flex-col"
+      >
+        <span
+          class="text-xs uppercase tracking-wide text-muted-foreground"
+        >
+          Address
+        </span>
+        <span
+          class="font-medium text-foreground"
+        >
+          42 Binary St
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;

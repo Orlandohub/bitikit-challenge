@@ -31,12 +31,27 @@ Then visit http://localhost:3000 in your browser.
 
 In both cases you can trigger a retry from the notification banner once connectivity is restored.
 
+## Testing
+
+Run the Vitest + Testing Library suite (including snapshots) with:
+
+```bash
+npm test
+```
+
+When snapshot updates are intentional, re-run with the `-u` flag:
+
+```bash
+npm test -- -u
+```
+
+Tests cover pagination paging logic, notification banner interactions (retry/dismiss/auto-dismiss), and user card rendering/favorite toggling.
+
 ## Known Issues & Limitations
 
 - Cached users are stored in IndexedDB per browser profile; clearing site data removes them.
 - Manual offline mode only serves pages that were previously fetched while online.
 - Favorites are persisted locally only and do not sync across devices.
-- No automated UI or integration tests are included yet.
 
 ## Future Improvements
 
