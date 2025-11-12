@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef } from "react";
 
 import { NotificationBanner } from "@/components/notification-banner";
 import { Pagination } from "@/components/pagination";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { UserGrid } from "@/components/user-grid";
 import { fetchUsers } from "@/lib/api";
 import {
@@ -150,14 +151,17 @@ export default function Home() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-          Random Users
-        </h1>
-        <p className="text-muted-foreground">
-          Browse users fetched from randomuser.me with offline support and local
-          favorites.
-        </p>
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+            Random Users
+          </h1>
+          <p className="text-muted-foreground">
+            Browse users fetched from randomuser.me with offline support and
+            local favorites.
+          </p>
+        </div>
+        <ThemeToggle />
       </header>
 
       {bannerVariant && bannerMessage ? (
