@@ -137,7 +137,13 @@ export default function Home() {
     return () => {
       handleAbortOngoingRequest();
     };
-  }, [loadUsers, setCurrentPage, setTotalPages, handleAbortOngoingRequest, isManualOffline]);
+  }, [
+    loadUsers,
+    setCurrentPage,
+    setTotalPages,
+    handleAbortOngoingRequest,
+    isManualOffline,
+  ]);
 
   const handlePageChange = async (page: number) => {
     setCurrentPage(page);
