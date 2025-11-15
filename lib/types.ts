@@ -74,12 +74,10 @@ export interface User {
 export interface PaginationState {
   currentPage: number;
   totalPages: number;
-  resultsPerPage: number;
 }
 
 export interface StatusState {
   isLoading: boolean;
-  isInitialLoad: boolean;
-  isOffline: boolean;
+  hasNetworkError: boolean;
   error: string | null;
 }

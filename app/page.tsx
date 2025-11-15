@@ -5,27 +5,26 @@ import { Wifi, WifiOff } from "lucide-react";
 import { NotificationBanner } from "@/components/notification-banner";
 import { Pagination } from "@/components/pagination";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { UserGrid } from "@/components/user-grid";
 import { Button } from "@/components/ui/button";
-import { useUsersController } from "@/lib/hooks/useUsersController";
+import { UserGrid } from "@/features/users/components/user-grid";
+import { useUsers } from "@/features/users/useUsers";
 
 export default function Home() {
   const {
     users,
     pagination,
+    isOffline,
     isManualOffline,
     bannerVariant,
     bannerMessage,
     isLoadingUsers,
     shouldShowSkeleton,
     isPaginationLoading,
-    hasError,
     handlePageChange,
-    handleRetry,
     handleOfflineToggle,
     handleToggleFavorite,
     dismissError,
-  } = useUsersController();
+  } = useUsers();
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
@@ -62,13 +61,39 @@ export default function Home() {
         </div>
       </header>
 
-      {bannerVariant && bannerMessage ? (
+      {bannerVariant === "error" && bannerMessage ? (
         <NotificationBanner
           variant={bannerVariant}
           message={bannerMessage}
-          onRetry={hasError ? handleRetry : undefined}
-          onDismiss={hasError ? dismissError : undefined}
+          onDismiss={dismissError}
         />
+      ) : null}
+
+      {!bannerVariant && isOffline ? (
+        <div className="flex flex-col gap-3 rounded-md border border-amber-300/60 bg-amber-50 px-4 py-3 text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-100">
+          <div className="font-medium">
+            {isManualOffline
+              ? "Offline mode is enabled."
+              : "You appear to be offline."}
+          </div>
+          <div className="text-sm text-amber-900/80 dark:text-amber-100/80">
+            {isManualOffline
+              ? "Turn it off to sync with Random User again."
+              : "We’ll keep showing cached users and sync automatically once you are back online."}
+          </div>
+          {isManualOffline ? (
+            <div>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={handleOfflineToggle}
+              >
+                Go back online
+              </Button>
+            </div>
+          ) : null}
+        </div>
       ) : null}
 
       <section aria-busy={isLoadingUsers}>

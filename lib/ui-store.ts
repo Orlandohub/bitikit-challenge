@@ -15,14 +15,11 @@ interface UIStoreState {
   status: StatusState;
   isManualOffline: boolean;
   setCurrentPage: (page: number) => void;
-  setTotalPages: (total: number) => void;
-  setResultsPerPage: (results: number) => void;
   setLoading: (value: boolean) => void;
-  setOffline: (value: boolean) => void;
+  setNetworkError: (value: boolean) => void;
   setError: (message: string | null) => void;
   clearError: () => void;
   setManualOffline: (value: boolean) => void;
-  reset: () => void;
 }
 
 const initialState: Pick<
@@ -32,12 +29,10 @@ const initialState: Pick<
   pagination: {
     currentPage: 1,
     totalPages: DEFAULT_TOTAL_PAGES,
-    resultsPerPage: DEFAULT_RESULTS_PER_PAGE,
   },
   status: {
     isLoading: false,
-    isInitialLoad: true,
-    isOffline: false,
+    hasNetworkError: false,
     error: null,
   },
   isManualOffline: false,
@@ -55,20 +50,6 @@ export const useUIStore = create<UIStoreState>()(
               currentPage: page,
             },
           })),
-        setTotalPages: (total) =>
-          set((state) => ({
-            pagination: {
-              ...state.pagination,
-              totalPages: Math.max(total, state.pagination.currentPage),
-            },
-          })),
-        setResultsPerPage: (results) =>
-          set((state) => ({
-            pagination: {
-              ...state.pagination,
-              resultsPerPage: results,
-            },
-          })),
         setLoading: (value) =>
           set((state) => ({
             status: {
@@ -76,11 +57,11 @@ export const useUIStore = create<UIStoreState>()(
               isLoading: value,
             },
           })),
-        setOffline: (value) =>
+        setNetworkError: (value) =>
           set((state) => ({
             status: {
               ...state.status,
-              isOffline: state.isManualOffline ? true : value,
+              hasNetworkError: value,
             },
           })),
         setError: (message) =>
@@ -98,14 +79,9 @@ export const useUIStore = create<UIStoreState>()(
             },
           })),
         setManualOffline: (value) =>
-          set((state) => ({
+          set(() => ({
             isManualOffline: value,
-            status: {
-              ...state.status,
-              isOffline: value ? true : state.status.isOffline,
-            },
           })),
-        reset: () => set(initialState),
       }),
       {
         name: "ui-store",
@@ -115,6 +91,25 @@ export const useUIStore = create<UIStoreState>()(
           },
           isManualOffline: state.isManualOffline,
         }),
+        merge: (persistedState, currentState) => {
+          const persisted = persistedState as Partial<UIStoreState>;
+
+          return {
+            ...currentState,
+            ...persisted,
+            pagination: {
+              ...currentState.pagination,
+              ...persisted?.pagination,
+              totalPages:
+                persisted?.pagination?.totalPages ??
+                currentState.pagination.totalPages,
+            },
+            status: {
+              ...currentState.status,
+              ...persisted?.status,
+            },
+          };
+        },
       }
     ),
     {

@@ -1,4 +1,4 @@
-import type { RandomUser, RandomUserApiResponse, User } from "./types";
+import type { RandomUser, RandomUserApiResponse, User } from "@/lib/types";
 import { Env } from "@/lib/env";
 
 export interface FetchUsersOptions {
