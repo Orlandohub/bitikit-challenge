@@ -14,7 +14,7 @@ export default function Home() {
     users,
     pagination,
     isOffline,
-    isManualOffline,
+    offlineModeEnabled,
     bannerVariant,
     bannerMessage,
     isLoadingUsers,
@@ -41,11 +41,11 @@ export default function Home() {
         <div className="flex items-center gap-2">
           <Button
             type="button"
-            variant={isManualOffline ? "default" : "outline"}
+            variant={offlineModeEnabled ? "default" : "outline"}
             onClick={handleOfflineToggle}
-            aria-pressed={isManualOffline}
+            aria-pressed={offlineModeEnabled}
           >
-            {isManualOffline ? (
+            {offlineModeEnabled ? (
               <>
                 <WifiOff className="mr-2 h-4 w-4" aria-hidden="true" />
                 Offline mode
@@ -72,16 +72,16 @@ export default function Home() {
       {!bannerVariant && isOffline ? (
         <div className="flex flex-col gap-3 rounded-md border border-amber-300/60 bg-amber-50 px-4 py-3 text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-100">
           <div className="font-medium">
-            {isManualOffline
+            {offlineModeEnabled
               ? "Offline mode is enabled."
               : "You appear to be offline."}
           </div>
           <div className="text-sm text-amber-900/80 dark:text-amber-100/80">
-            {isManualOffline
+            {offlineModeEnabled
               ? "Turn it off to sync with Random User again."
-              : "We’ll keep showing cached users and sync automatically once you are back online."}
+              : "We'll keep showing cached users and sync automatically once you are back online."}
           </div>
-          {isManualOffline ? (
+          {offlineModeEnabled ? (
             <div>
               <Button
                 type="button"

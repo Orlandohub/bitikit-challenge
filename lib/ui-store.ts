@@ -13,18 +13,18 @@ export const DEFAULT_TOTAL_PAGES = Env.NEXT_PUBLIC_DEFAULT_TOTAL_PAGES;
 interface UIStoreState {
   pagination: PaginationState;
   status: StatusState;
-  isManualOffline: boolean;
+  offlineModeEnabled: boolean;
   setCurrentPage: (page: number) => void;
   setLoading: (value: boolean) => void;
   setNetworkError: (value: boolean) => void;
   setError: (message: string | null) => void;
   clearError: () => void;
-  setManualOffline: (value: boolean) => void;
+  setOfflineModeEnabled: (value: boolean) => void;
 }
 
 const initialState: Pick<
   UIStoreState,
-  "pagination" | "status" | "isManualOffline"
+  "pagination" | "status" | "offlineModeEnabled"
 > = {
   pagination: {
     currentPage: 1,
@@ -35,7 +35,7 @@ const initialState: Pick<
     hasNetworkError: false,
     error: null,
   },
-  isManualOffline: false,
+  offlineModeEnabled: false,
 };
 
 export const useUIStore = create<UIStoreState>()(
@@ -78,9 +78,9 @@ export const useUIStore = create<UIStoreState>()(
               error: null,
             },
           })),
-        setManualOffline: (value) =>
+        setOfflineModeEnabled: (value) =>
           set(() => ({
-            isManualOffline: value,
+            offlineModeEnabled: value,
           })),
       }),
       {
@@ -89,7 +89,7 @@ export const useUIStore = create<UIStoreState>()(
           pagination: {
             currentPage: state.pagination.currentPage,
           },
-          isManualOffline: state.isManualOffline,
+          offlineModeEnabled: state.offlineModeEnabled,
         }),
         merge: (persistedState, currentState) => {
           const persisted = persistedState as Partial<UIStoreState>;

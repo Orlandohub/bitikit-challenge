@@ -20,8 +20,8 @@ export function useUsers() {
     setError,
     clearError,
     setCurrentPage,
-    isManualOffline,
-    setManualOffline,
+    offlineModeEnabled,
+    setOfflineModeEnabled,
   } = useUIStore();
 
   const userRecords = useLiveQuery(
@@ -33,19 +33,14 @@ export function useUsers() {
   const hasUsers = users.length > 0;
   const isLoadingUsers = status.isLoading || userRecords === undefined;
   const shouldShowSkeleton = isLoadingUsers && !hasUsers;
-  const isOffline = isManualOffline || status.hasNetworkError;
+  const isOffline = offlineModeEnabled || status.hasNetworkError;
 
   const bannerVariant: BannerVariant | null = status.error ? "error" : null;
   const bannerMessage = status.error ?? null;
 
   const loadUsers = useCallback(
-    async (
-      page: number,
-      { cacheOnly = false }: { cacheOnly?: boolean } = {}
-    ) => {
-      const shouldUseCacheOnly = cacheOnly || isManualOffline;
-
-      if (shouldUseCacheOnly) {
+    async (page: number) => {
+      if (offlineModeEnabled) {
         setNetworkError(false);
         return;
       }
@@ -70,13 +65,7 @@ export function useUsers() {
         setLoading(false);
       }
     },
-    [
-      clearError,
-      isManualOffline,
-      setError,
-      setLoading,
-      setNetworkError,
-    ]
+    [clearError, offlineModeEnabled, setError, setLoading, setNetworkError]
   );
 
   useEffect(() => {
@@ -99,14 +88,14 @@ export function useUsers() {
   );
 
   const handleOfflineToggle = useCallback(() => {
-    setManualOffline(!isManualOffline);
-  }, [isManualOffline, setManualOffline]);
+    setOfflineModeEnabled(!offlineModeEnabled);
+  }, [offlineModeEnabled, setOfflineModeEnabled]);
 
   return {
     users,
     pagination,
     isOffline,
-    isManualOffline,
+    offlineModeEnabled,
     bannerVariant,
     bannerMessage,
     isLoadingUsers,
