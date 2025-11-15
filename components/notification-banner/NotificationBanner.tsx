@@ -6,7 +6,7 @@ import { AlertCircle, WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-type BannerVariant = "error" | "offline";
+export type BannerVariant = "error" | "offline";
 
 interface NotificationBannerProps {
   message: string;

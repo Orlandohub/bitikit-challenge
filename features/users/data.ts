@@ -1,9 +1,5 @@
-import { Env } from "@/lib/env";
-
-import { db, type UserRecord } from "./database";
-import type { User } from "./types";
-
-const DEFAULT_CACHE_MAX_AGE_MS = Env.NEXT_PUBLIC_CACHE_MAX_AGE_MS;
+import { db, type UserRecord } from "@/features/users/db";
+import type { User } from "@/lib/types";
 
 export async function saveUsers(users: User[], fetchedAt = Date.now()) {
   if (!users.length) {
@@ -49,29 +45,13 @@ export async function toggleFavorite(userId: string, value: boolean) {
 }
 
 export async function getFavoritesMap(): Promise<Record<string, boolean>> {
-  const favorites = await db.users.where("isFavorite").equals(1).toArray();
+  const favorites = await db.users
+    .filter((user) => Boolean(user.isFavorite))
+    .toArray();
   return favorites.reduce<Record<string, boolean>>((acc, user) => {
     acc[user.id] = true;
     return acc;
   }, {});
-}
-
-export async function isPageFresh(
-  page: number,
-  maxAgeMs = DEFAULT_CACHE_MAX_AGE_MS
-) {
-  const latestRecord = await db.users
-    .where("page")
-    .equals(page)
-    .reverse()
-    .sortBy("fetchedAt");
-
-  if (!latestRecord.length) {
-    return false;
-  }
-
-  const newestFetch = latestRecord[0].fetchedAt;
-  return Date.now() - newestFetch < maxAgeMs;
 }
 
 export function toUser(record: UserRecord): User {

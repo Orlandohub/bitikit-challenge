@@ -1,6 +1,5 @@
 "use client";
 
-import { useUserStore } from "@/lib/store";
 import type { User } from "@/lib/types";
 
 import { UserCard } from "./user-card";
@@ -21,8 +20,6 @@ export function UserGrid({
   skeletonCount = DEFAULT_SKELETON_COUNT,
   onToggleFavorite,
 }: UserGridProps) {
-  const favorites = useUserStore((state) => state.favorites);
-
   if (isLoading && (!users || users.length === 0)) {
     return <LoadingGrid count={skeletonCount} />;
   }
@@ -44,10 +41,7 @@ export function UserGrid({
       {users.map((user) => (
         <UserCard
           key={user.id}
-          user={{
-            ...user,
-            isFavorite: favorites[user.id] ?? user.isFavorite,
-          }}
+          user={user}
           onToggleFavorite={onToggleFavorite}
           disabled={isLoading}
         />
